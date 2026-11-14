@@ -47,11 +47,15 @@ def dataset() -> pl.DataFrame:
         "season", "round", "pick", "team", "pfr_player_id", "pfr_player_name", "position", "college",
         "seasons_started", "w_av", "games", "probowls", "allpro",
     )
-    c = fetch.combine().select("pfr_id", "ht", "wt", "forty", "bench", "vertical", "broad_jump", "cone", "shuttle")
-    c = c.filter(pl.col("pfr_id").is_not_null()).unique("pfr_id")
+    c = fetch.combine().select("pfr_id", "cfb_id", "ht", "wt", "forty", "bench", "vertical", "broad_jump", "cone", "shuttle")
+    # Match on the Pro Football Reference id; fall back to the college id when PFR's is missing.
+    d = d.join(fetch.draft_picks().select("pfr_player_id", "cfb_player_id").unique("pfr_player_id"), on="pfr_player_id", how="left")
+    c = c.with_columns(key=pl.coalesce(pl.col("pfr_id"), pl.col("cfb_id")))
+    d = d.with_columns(key=pl.when(pl.col("pfr_player_id").is_in(c["pfr_id"].drop_nulls().implode())).then(pl.col("pfr_player_id")).otherwise(pl.col("cfb_player_id")))
+    c = c.filter(pl.col("key").is_not_null()).unique("key").drop("pfr_id", "cfb_id")
     parts = pl.col("ht").str.split_exact("-", 1)
     c = c.with_columns(ht_in=parts.struct.field("field_0").cast(pl.Float64, strict=False) * 12 + parts.struct.field("field_1").cast(pl.Float64, strict=False)).drop("ht")
-    df = d.join(c, left_on="pfr_player_id", right_on="pfr_id", how="left")
+    df = d.join(c, on="key", how="left").drop("key", "cfb_player_id")
     df = df.with_columns(group=pl.col("position").replace_strict(GROUPS, default=None)).filter(pl.col("group").is_not_null())
     df = df.filter(pl.col("season") >= 2000)
     return df.with_columns(starter=(pl.col("seasons_started").fill_null(0) >= 3).cast(pl.Int8))
