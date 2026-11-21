@@ -1,5 +1,7 @@
 # Football
 
+**Live site:** https://football.satwikmedipalli.dev
+
 Two questions, answered with public nflverse data:
 
 1. **How good is each team, really?** Offense and defense by expected points added (EPA)
