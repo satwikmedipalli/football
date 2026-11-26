@@ -31,6 +31,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <a href="/method">Method & limits</a> · <a href={REPO}>Code ↗</a> ·{" "}
               <a href="https://baseball.satwikmedipalli.dev">Baseball ↗</a>
             </p>
+            <p>
+              <a href="https://satwikmedipalli.dev">Portfolio ↗</a> · <a href="https://github.com/satwikmedipalli">GitHub ↗</a> · <a href="https://linkedin.com/in/medipalli-satwik">LinkedIn ↗</a>
+            </p>
           </div>
         </footer>
       </body>
