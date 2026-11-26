@@ -4,6 +4,7 @@ import Nav from "@/components/Nav";
 import { META } from "@/lib/data";
 import { REPO } from "@/lib/site";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const display = Oswald({ subsets: ["latin"], variable: "--font-display", weight: ["500", "600"] });
 const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </p>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
